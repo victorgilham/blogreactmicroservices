@@ -9,7 +9,7 @@ const port = process.env.PORT || 9998;
 const commentsByPostId: any = {};
 
 app.get('/posts/:id/comments', (req: Request, res: Response) => {
-  res.send(commentsByPostId);
+  res.send(commentsByPostId[req.params.id] || []);
 });
 
 app.post('/posts/:id/comments', (req: Request, res: Response) => {
@@ -18,9 +18,11 @@ app.post('/posts/:id/comments', (req: Request, res: Response) => {
 
   const comments = commentsByPostId[req.params.id] || [];
 
-  comments.push({ id: commentId, content })
+  comments.push({ id: commentId, content });
 
-  res.status(201).send(commentsByPostId[commentId]);
+  commentsByPostId[req.params.id] = comments;
+
+  res.status(201).send(comments);
 });
 
 app.listen(port, () => {
